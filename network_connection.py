@@ -43,4 +43,4 @@ def connection():  # combines the previous two functions
 
 
 if __name__ == "__main__":
-    print(connection(), flush=True, end="")
+    print(connection())
