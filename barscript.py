@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# a script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages.
+# required: psutil, netifaces, sockets, subprocess
 
 import socket
 import netifaces
