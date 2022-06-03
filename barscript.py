@@ -6,8 +6,6 @@ from os import popen
 import subprocess
 import psutil
 import time
-from colorama import Fore
-from colorama import Style
 
 
 # Network
@@ -77,6 +75,7 @@ def count_pkg(default_cmd="pacman -Q"):  # pacman for arch, apt for debian based
 
 
 if __name__ == "__main__":
+    # can be used in a while loop to live monitor data. 
     print("|", " CPU: {}%".format(cpu()), "|", "Packages: {}".format(count_pkg()), "|", "VPN: {}".format(vpn_connection()), "|", "VOL: {}".format(check_vol()), "|", connection(), "|", flush=True, end="")
     time.sleep(0.3)
 
