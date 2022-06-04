@@ -60,6 +60,7 @@ def vpn_connection():
         return "off"
 
 
+# CPU
 def cpu():
     return psutil.cpu_percent(interval=0.5)
 
@@ -76,8 +77,20 @@ def count_pkg(default_cmd="pacman -Q"):  # pacman for arch, apt for debian based
     return str(len(popen(default_cmd).readlines()))
 
 
-if __name__ == "__main__":
+def main():
     # can be used in a while loop to live monitor data. 
-    print("|", " CPU: {}%".format(cpu()), "|", "Packages: {}".format(count_pkg()), "|", "VPN: {}".format(vpn_connection()), "|", "VOL: {}".format(check_vol()), "|", connection(), "|", flush=True, end="")
+    print(
+        "|", " CPU: {}%".format(cpu()),
+        "|", "Packages: {}".format(count_pkg()),
+        "|", "VPN: {}".format(vpn_connection()),
+        "|", "VOL: {}".format(check_vol()),
+        "|", connection(), "|",
+        flush=True,
+        end=""
+    )
     time.sleep(0.3)
+    
+    
+if __name__ == "__main__":
+    main()
 
