@@ -11,7 +11,7 @@ from os import popen
 import subprocess
 import psutil
 import time
-
+import datetime
 
 # Network
 def ping():
@@ -88,6 +88,22 @@ def count_pkg(default_cmd="pacman -Q"):
     default_cmd: pacman for arch, apt for debian based system etc."""
     return str(len(popen(default_cmd).readlines()))
 
+# BATTERY STATUS
+def battery():
+    """return BATTERY STATUS"""
+    # Change BAT1 to whatever your battery is identified as. Typically BAT0 or BAT1
+    cmd_1="cat /sys/class/power_supply/BAT0/capacity"
+    cmd_2="cat /sys/class/power_supply/BAT0/status"
+
+    charge = subprocess.run(cmd_1, stdout=subprocess.PIPE, shell=True)
+    status = subprocess.run(cmd_2, stdout=subprocess.PIPE, shell=True)
+
+    return f"{charge.stdout.strip().decode('ascii')}% {status.stdout.strip().decode('ascii')}"
+
+# DATE AND TIME
+def date_and_time():
+    """return DATE and TIME"""
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def main():
     while True: 
@@ -97,7 +113,9 @@ def main():
             "|", "Packages: {}".format(count_pkg()),
             "|", "VPN: {}".format(vpn_connection()),
             "|", "VOL: {}".format(check_vol()),
-            "|", connection(), "|",
+            "|", connection(),
+            "|", "BAT: {}".format(battery()),
+            "|", "DAT: {}".format(date_and_time()),  "|",
             flush=True,
             end=""
         )
