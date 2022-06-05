@@ -1,6 +1,9 @@
 #!/usr/bin/env python
-# a script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages.
-# required: psutil, netifaces, sockets, subprocess
+""" A script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages.
+Use on a panel of a window manager on Linux based system.
+**Install using pip3: psutil, netifaces, sockets, subprocess**
+Some of these functions require you to change certain commands based on the distro you want to execute this script on.
+"""
 
 import socket
 import netifaces
@@ -11,7 +14,8 @@ import time
 
 
 # Network
-def ping():  # checks if there is a connection
+def ping():
+    """checks if there is a connection"""
     try:
         socket.setdefaulttimeout(1)
         socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,7 +35,8 @@ Ethernet_device = "enp2s0"
 Wifi_device = "wlp3s0"
 
 
-def interface(eth=Ethernet_device, wifi=Wifi_device):  # returns the type of connection
+def interface(eth=Ethernet_device, wifi=Wifi_device):
+    """returns the type of connection"""
     gateways = netifaces.gateways()
     if gateways["default"][2][1] == eth:
         return "Ethernet"
@@ -41,7 +46,8 @@ def interface(eth=Ethernet_device, wifi=Wifi_device):  # returns the type of con
         return None
 
 
-def connection():  # combines the previous two functions
+def connection():
+    """combines the previous two functions"""
     if ping() is True:
         if interface() == "Ethernet":
             return "Ethernet: CONNECTED"
@@ -53,6 +59,7 @@ def connection():  # combines the previous two functions
 
 # VPN
 def vpn_connection():
+    """checks the connection of VPN"""
     r = popen("ip a | grep tun0 | grep inet | wc -l").readline()
     if r == 1:
         return "on"
@@ -62,33 +69,39 @@ def vpn_connection():
 
 # CPU
 def cpu():
+    """return CPU usage in percent."""
     return psutil.cpu_percent(interval=0.5)
 
 
 # VOLUME
 def check_vol():
+    """return volume level in percent.
+    be sure to have alsamixer and pulseaudio installed on your system."""
     cmd = "amixer get Master | awk -F'[][]' 'END{ print $2}'"
     process = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     return process.stdout.strip().decode("ascii")
 
 
 # count installed packages
-def count_pkg(default_cmd="pacman -Q"):  # pacman for arch, apt for debian based system etc.
+def count_pkg(default_cmd="pacman -Q"):
+    """return number of all installed packages on the system.
+    default_cmd: pacman for arch, apt for debian based system etc."""
     return str(len(popen(default_cmd).readlines()))
 
 
 def main():
-    # can be used in a while loop to live monitor data. 
-    print(
-        "|", " CPU: {}%".format(cpu()),
-        "|", "Packages: {}".format(count_pkg()),
-        "|", "VPN: {}".format(vpn_connection()),
-        "|", "VOL: {}".format(check_vol()),
-        "|", connection(), "|",
-        flush=True,
-        end=""
-    )
-    time.sleep(0.3)
+    while True: 
+        print(
+            "\r",
+            "|", " CPU: {}%".format(cpu()),
+            "|", "Packages: {}".format(count_pkg()),
+            "|", "VPN: {}".format(vpn_connection()),
+            "|", "VOL: {}".format(check_vol()),
+            "|", connection(), "|",
+            flush=True,
+            end=""
+        )
+        time.sleep(0.3)
     
     
 if __name__ == "__main__":
