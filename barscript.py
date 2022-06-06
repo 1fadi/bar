@@ -10,7 +10,7 @@ import netifaces
 from os import popen
 import subprocess
 import psutil
-import time
+from time import sleep
 
 
 # Network
@@ -126,7 +126,7 @@ def main():
             flush=True,
             end=""
         )
-        time.sleep(0.3)
+        sleep(0.3)
     
     
 if __name__ == "__main__":
