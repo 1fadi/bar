@@ -73,6 +73,29 @@ def cpu():
     return psutil.cpu_percent(interval=0.5)
 
 
+# RAM
+def free_ram():
+    """calculates the available ram"""
+    total = psutil.virtual_memory().total/1024/1024
+    free = psutil.virtual_memory().available/1024/1024
+    return f"{int(free)}/{int(total)}"
+
+
+# BATTERY
+def bat():
+    """return battery level in percent and check if its charging"""
+    battery = psutil.sensors_battery()
+    try:
+        plugged = battery.power_plugged
+    except AttributeError as err:
+        return "No battery found!"
+    percent = str(battery.percent)
+    if plugged:
+        return f"Bat: {percent}% Charging.."
+    else:
+        return f"Bat: {percent}%"
+
+    
 # VOLUME
 def check_vol():
     """return volume level in percent.
@@ -93,11 +116,13 @@ def main():
     while True: 
         print(
             "\r",
-            "|", " CPU: {}%".format(cpu()),
+            "RAM: {}".format(free_ram()),
+            "|", "CPU: {}%".format(cpu()),
             "|", "Packages: {}".format(count_pkg()),
             "|", "VPN: {}".format(vpn_connection()),
             "|", "VOL: {}".format(check_vol()),
-            "|", connection(), "|",
+            "|", connection(), 
+            "|",# bat(),
             flush=True,
             end=""
         )
