@@ -128,7 +128,10 @@ def find_usb(exclude_system_disks=disks):
         if device.device_type == "disk":
             if device.device_node not in exclude_system_disks:
                 usb_devices.append(device.device_node)
-    return "USB: "+ str(len(usb_devices))
+    if not usb_devices:
+        return ""
+    else:
+        return "USB: "+ str(len(usb_devices))
 
 
 #### main ####
