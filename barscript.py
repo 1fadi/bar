@@ -10,6 +10,7 @@ import netifaces
 from os import popen
 import subprocess
 import psutil
+import pyudev
 from time import sleep
 
 
@@ -112,6 +113,25 @@ def count_pkg(default_cmd="pacman -Q"):
     return str(len(popen(default_cmd).readlines()))
 
 
+# Set hdd and ssd disks
+disks = ["/dev/sda", "/dev/sdb"]
+
+
+# USB drives.
+def find_usb(exclude_system_disks=disks):
+    """return how many usb drives are plugged in.
+    this function looks up for available disks and excludes
+    hdd and ssd drives."""
+    context = pyudev.Context()
+    usb_devices = []
+    for device in context.list_devices(subsystem="block"):
+        if device.device_type == "disk":
+            if device.device_node not in exclude_system_disks:
+                usb_devices.append(device.device_node)
+    return "USB: "+ str(len(usb_devices))
+
+
+#### main ####
 def main():
     while True: 
         print(
@@ -122,6 +142,7 @@ def main():
             "|", "VPN: {}".format(vpn_connection()),
             "|", "VOL: {}".format(check_vol()),
             "|", connection(), 
+            "|", find_usb(),
             "|",# bat(),
             flush=True,
             end=""
