@@ -1,5 +1,6 @@
 # Status bar
 A script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages, etc..
+
 Best use of this script is on a panel of a window manager on Linux based system.
 
 ## Requirements
