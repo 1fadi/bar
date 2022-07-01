@@ -1,5 +1,5 @@
 # Status bar
-A script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages, etc..
+A script that monitors live _CPU usage, network connection(also connection type), volume level, VPN connection, count installed packages, free RAM, battery level, checks USB drives_. 
 
 Best use of this script is on a panel of a window manager on Linux based system.
 
@@ -9,6 +9,7 @@ Best use of this script is on a panel of a window manager on Linux based system.
 * netifaces
 * socket
 * subprocess
+* pyudev
 
 ## Notes
 * this script works with no problems on most linux based operating systems.
