@@ -10,8 +10,9 @@ import netifaces
 from os import popen
 import subprocess
 import psutil
-import pyudev
+from pyudev import Context
 from time import sleep
+from datetime import datetime
 
 
 # Network
@@ -110,7 +111,11 @@ def check_vol():
 def count_pkg(default_cmd="pacman -Q"):
     """return number of all installed packages on the system.
     default_cmd: pacman for arch, apt for debian based system etc."""
-    return str(len(popen(default_cmd).readlines()))
+    OS = [psutil.LINUX, psutil.OPENBSD, psutil.FREEBSD, psutil.NETBSD, psutil.BSD]
+    if any(OS):  # checks if OS is supported, windows doesn't have a package manager by default
+        return str(len(popen(default_cmd).readlines()))
+    else:
+        pass
 
 
 # Set hdd and ssd disks
@@ -122,7 +127,7 @@ def find_usb(exclude_system_disks=disks):
     """return how many usb drives are plugged in.
     this function looks up for available disks and excludes
     hdd and ssd drives."""
-    context = pyudev.Context()
+    context = Context()
     usb_devices = []
     for device in context.list_devices(subsystem="block"):
         if device.device_type == "disk":
@@ -133,6 +138,14 @@ def find_usb(exclude_system_disks=disks):
     else:
         return "USB: "+ str(len(usb_devices))
 
+
+# date and time
+def display_datetime():
+    now = datetime.utcnow()
+    current_time = now.strftime("%I:%M %p")
+    current_date = now.date()
+    return f"{current_date} {current_time}"
+    
 
 #### main ####
 def main():
