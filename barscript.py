@@ -15,48 +15,49 @@ from time import sleep
 from datetime import datetime
 
 
-# Network
-def ping():
-    """checks if there is a connection"""
-    try:
-        socket.setdefaulttimeout(1)
-        socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        host = "1.1.1.1"
-        port = 80
-        server_addr = (host, port)
-        socket_obj.connect(server_addr)
-    except OSError as Err:
-        return False
-    else:
-        socket_obj.close()
-        return True
-
-
 # Set network devices
 Ethernet_device = "enp2s0"
 Wifi_device = "wlp3s0"
 
-
-def interface(eth=Ethernet_device, wifi=Wifi_device):
-    """returns the type of connection"""
-    gateways = netifaces.gateways()
-    if gateways["default"][2][1] == eth:
-        return "Ethernet"
-    elif gateways["default"][2][1] == wifi:
-        return "Wifi"
-    else:
-        return None
-
-
+# Network
 def connection():
-    """combines the previous two functions"""
+    """
+    Internet connection status
+    displays -> Wi-fi or Ethernet or NO CONNECTION
+    """
+    
+    def ping():
+        """checks if there is a connection"""
+        try:
+            socket.setdefaulttimeout(1)
+            socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            host = "1.1.1.1"
+            port = 80
+            server_addr = (host, port)
+            socket_obj.connect(server_addr)
+        except OSError as Err:
+            return False
+        else:
+            socket_obj.close()
+            return True
+    
+    def interface(eth=Ethernet_device, wifi=Wifi_device):
+        """returns the type of connection"""
+        gateways = netifaces.gateways()
+        if gateways["default"][2][1] == eth:
+            return "Ethernet"
+        elif gateways["default"][2][1] == wifi:
+            return "Wifi"
+        else:
+            return None
+    
     if ping() is True:
         if interface() == "Ethernet":
-            return "Ethernet: CONNECTED"
+            return "Ethernet"
         elif interface() == "Wifi":
-            return "Wi-fi: CONNECTED"
+            return "Wi-fi"
     else:
-        return "NO CONNECTION !"
+        return "NO CONNECTION"
 
 
 # VPN
@@ -136,30 +137,38 @@ def find_usb(exclude_system_disks=disks):
     if not usb_devices:
         return ""
     else:
-        return "USB: "+ str(len(usb_devices))
+        return "USB: " + str(len(usb_devices))
 
 
 # date and time
 def display_datetime():
+    # now = datetime.now()
     now = datetime.utcnow()
-    current_time = now.strftime("%I:%M %p")
+    current_time = now.strftime("%I:%M %p")  # 12 h cycle mode
     current_date = now.date()
     return f"{current_date} {current_time}"
     
 
 #### main ####
 def main():
+    """
+    
+    here comes the style.
+    customize it to your personal preferences
+    
+    """
+    sep = "|"  # set separator
     while True: 
         print(
             "\r",
             "RAM: {}".format(free_ram()),
-            "|", "CPU: {}%".format(cpu()),
-            "|", "Packages: {}".format(count_pkg()),
-            "|", "VPN: {}".format(vpn_connection()),
-            "|", "VOL: {}".format(check_vol()),
-            "|", connection(), 
-            "|", find_usb(),
-            "|",# bat(),
+            sep, "CPU: {}%".format(cpu()),
+            sep, "Packages: {}".format(count_pkg()),
+            sep, "VPN: {}".format(vpn_connection()),
+            sep, "VOL: {}".format(check_vol()),
+            sep, connection(), 
+            sep, find_usb(),
+            sep,# bat(),
             flush=True,
             end=""
         )
