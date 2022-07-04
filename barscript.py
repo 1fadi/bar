@@ -19,6 +19,10 @@ from datetime import datetime
 Ethernet_device = "enp2s0"
 Wifi_device = "wlp3s0"
 
+# Set hdd and ssd disks
+disks = ["/dev/sda", "/dev/sdb"]
+
+
 # Network
 def connection():
     """
@@ -117,10 +121,6 @@ def count_pkg(default_cmd="pacman -Q"):
         return str(len(popen(default_cmd).readlines()))
     else:
         pass
-
-
-# Set hdd and ssd disks
-disks = ["/dev/sda", "/dev/sdb"]
 
 
 # USB drives.
