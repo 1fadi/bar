@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-""" A script for live monitoring CPU usage, network conn, volume, VPN conn, installed packages, etc..
-Use on a panel of a window manager on Linux based system.
-**Install using pip3: psutil, netifaces, sockets, subprocess**
-Some of these functions require you to change certain commands based on the distro you want to execute this script on.
-"""
-
 import socket
 import netifaces
 from os import popen
@@ -15,19 +9,10 @@ from time import sleep
 from datetime import datetime
 
 
-# Set network devices
-Ethernet_device = "enp2s0"
-Wifi_device = "wlp3s0"
-
-# Set hdd and ssd disks
-disks = ["/dev/sda", "/dev/sdb"]
-
-
 # Network
-def connection():
+def connection(interfaces: list):
     """
     Internet connection status
-    displays -> Wi-fi or Ethernet or NO CONNECTION
     """
     
     def ping():
@@ -45,20 +30,16 @@ def connection():
             socket_obj.close()
             return True
     
-    def interface(eth=Ethernet_device, wifi=Wifi_device):
+    
+    def find_interface(interfaces=interfaces):
         """returns the type of connection"""
         gateways = netifaces.gateways()
-        if gateways["default"][2][1] == eth:
-            return "Ethernet"
-        elif gateways["default"][2][1] == wifi:
-            return "Wifi"
-        else:
-            return None
+        return list(filter(lambda x: (x == gateways["default"][2][1]), interfaces))[0]
     
     if ping() is True:
-        if interface() == "Ethernet":
+        if find_interface()[:1] == "e":
             return "Ethernet"
-        elif interface() == "Wifi":
+        elif find_interface()[:1] == "w":
             return "Wi-fi"
     else:
         return "NO CONNECTION"
@@ -96,9 +77,9 @@ def bat():
         plugged = battery.power_plugged
     except AttributeError as err:
         return "No battery found!"
-    percent = str(battery.percent)
+    percent = str(battery.percent).rpartition(".")[0]
     if plugged:
-        return f"Bat: {percent}% Charging.."
+        return f"Bat: {percent}%"
     else:
         return f"Bat: {percent}%"
 
@@ -123,7 +104,7 @@ def count_pkg(default_cmd="pacman -Q"):
         pass
 
 
-# USB drives.
+'''# USB drives.
 def find_usb(exclude_system_disks=disks):
     """return how many usb drives are plugged in.
     this function looks up for available disks and excludes
@@ -137,7 +118,7 @@ def find_usb(exclude_system_disks=disks):
     if not usb_devices:
         return ""
     else:
-        return "USB: " + str(len(usb_devices))
+        return "USB: " + str(len(usb_devices))'''
 
 
 # date and time
@@ -147,34 +128,3 @@ def display_datetime():
     current_time = now.strftime("%I:%M %p")  # 12 h cycle mode
     current_date = now.date()
     return f"{current_date} {current_time}"
-    
-
-#### main ####
-def main():
-    """
-    
-    here comes the style.
-    customize it to your personal preferences
-    
-    """
-    sep = "|"  # set separator
-    while True: 
-        print(
-            "\r",
-            "RAM: {}".format(free_ram()),
-            sep, "CPU: {}%".format(cpu()),
-            sep, "Packages: {}".format(count_pkg()),
-            sep, "VPN: {}".format(vpn_connection()),
-            sep, "VOL: {}".format(check_vol()),
-            sep, connection(), 
-            sep, find_usb(),
-            sep,# bat(),
-            flush=True,
-            end=""
-        )
-        sleep(0.3)
-    
-    
-if __name__ == "__main__":
-    main()
-
