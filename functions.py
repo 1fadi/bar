@@ -4,7 +4,7 @@ import netifaces
 from os import popen
 import subprocess
 import psutil
-from pyudev import Context
+#from pyudev import Context
 from time import sleep
 from datetime import datetime
 

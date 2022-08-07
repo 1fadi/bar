@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from barscript import *
+from functions import *
 
 # Set network devices
 Interfaces = ["wlp4s0", "enp0s31f6"]
